@@ -1,0 +1,131 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Sep 13 00:09:21 2018
+
+@author: wn li
+"""
+
+import numpy as np
+import pylab
+import scipy.stats as stats
+import pandas as pd
+import matplotlib.pyplot as plot
+from random import uniform
+
+#read data from uci data repository
+target_url = ("https://archive.ics.uci.edu/ml/machine-learning-"
+"databases/undocumented/connectionist-bench/sonar/sonar.all-data")
+rocksVMines = pd.read_csv(target_url,header=None, prefix="V")
+print("Number of Rows of Data = ", rocksVMines.shape[0])
+print("Number of Columns of Data = ", rocksVMines.shape[1])
+print(rocksVMines.head())
+print(rocksVMines.tail())
+#print summary of data frame
+summary = rocksVMines.describe()
+print(summary)
+
+def datatypes(k):
+    print("column",k,":",rocksVMines.iloc[:,k].dtype)
+
+for k in range(rocksVMines.shape[1]):
+    datatypes(k)
+    
+#generate summary statistics for column k e.g.
+def summary_stat(k):
+    print("Mean = ", np.mean(rocksVMines.iloc[:,k]))
+    print("Standard Deviation = ", np.std(rocksVMines.iloc[:,k]))
+
+summary_stat(3)
+
+#calculate quantile boundaries
+def quantile(k):
+    print(np.percentile(rocksVMines.iloc[:,k],[0,25,50,75,100]))
+
+quantile(3)
+
+#run again with 10 equal intervals
+def percentiles(k,m):
+    points=np.linspace(0,100,m)
+    print(np.percentile(rocksVMines.iloc[:,k],points))
+
+percentiles(3,11)
+
+#The last column contains categorical variables
+print("Unique Label Values: ", set(rocksVMines.iloc[:,60]))
+
+#count up the number of elements having each value
+print("R:",rocksVMines.iloc[:,60].eq('R').sum(),"M:", rocksVMines.iloc[:,60].eq('M').sum())
+
+def QQ_plot(k):
+    stats.probplot(rocksVMines.iloc[:,k], dist="norm", plot=pylab)
+    pylab.show()
+QQ_plot(3)
+
+#Parallel coordinates graph
+for i in range(208):
+#assign color based on "M" or "R" labels
+    if rocksVMines.iat[i,60] == "M":
+        pcolor = "red"
+    else:
+        pcolor = "blue"
+    #plot rows of data as if they were series data
+    dataRow = rocksVMines.iloc[i,0:60]
+    dataRow.plot(color=pcolor)
+plot.xlabel("Attribute Index")
+plot.ylabel(("Attribute Values"))
+plot.show()
+
+#calculate correlations between real-valued attributes
+def scatters(a,b):
+    datacola=rocksVMines.iloc[0:208,a]
+    datacolb = rocksVMines.iloc[0:208,b]
+    plot.scatter(datacola, datacolb)
+    plot.xlabel("Attribute %s"%a)
+    plot.ylabel("Attribute %s"%b)
+    plot.show()
+scatters(1,2)
+scatters(2,21)
+
+#change the targets to numeric values
+target = []
+for i in range(208):
+    #assign 0 or 1 target value based on "M" or "R" labels
+    if rocksVMines.iat[i,60] == "M":
+        target.append(1.0)
+    else:
+        target.append(0.0)
+#plot 35th attribute
+def Tacp(k):
+    dataCol = rocksVMines.iloc[0:208,k]
+    plot.scatter(dataCol, target)
+    plot.xlabel("Attribute Value")
+    plot.ylabel("Target Value")
+    plot.show()
+Tacp(35)
+
+#To improve the visualization, this version dithers the points a little and makes them somewhat transparent
+target = []
+for i in range(208):
+    #assign 0 or 1 target value based on "M" or "R" labels and add some dither
+    if rocksVMines.iat[i,60] == "M":
+        target.append(1.0 + uniform(-0.1, 0.1))
+    else:
+        target.append(0.0 + uniform(-0.1, 0.1))
+#plot 35th attribute with semi-opaque points
+Tacp(35)
+
+#calculate correlations between real-valued attributes
+def cor(a,b):
+    print("Correlation between attribute %s and %s is "%(a,b),np.corrcoef(rocksVMines.iloc[0:208,a],rocksVMines.iloc[0:208,b])[1,0])
+cor(1,2)
+cor(1,20)    
+
+#calculate correlations between real-valued attributes
+corMat = pd.DataFrame(rocksVMines.corr())
+#visualize correlations using heatmap
+plot.pcolor(corMat)
+plot.show()
+
+print("My name is LI WENNING")
+print("My NetID is: wenning5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
