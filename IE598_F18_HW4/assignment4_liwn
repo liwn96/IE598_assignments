@@ -172,3 +172,7 @@ y_train_pred_e=y_train_pred_e.reshape(-1,1)
 y_test_pred_e=elasticnet.predict(X_test)
 y_test_pred_e=y_test_pred_e.reshape(-1,1)
 residual_plot(y_train_pred_e,y_test_pred_e,y_train,y_test)
+
+print("My name is Li Wenning")
+print("My NetID is: wenning5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
