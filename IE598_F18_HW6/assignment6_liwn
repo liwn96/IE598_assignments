@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Oct  6 02:02:54 2018
+
+@author: wn li
+"""
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from sklearn.model_selection import cross_val_score
+
+iris = datasets.load_iris()
+X = iris.data[:, [2, 3]]
+y = iris.target
+
+trainingscores = np.zeros(10)
+testscores = np.zeros(10)
+for i in range(10):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=i+1, stratify=y)
+    tree = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
+    tree.fit(X_train, y_train)
+    trainingscores[i]=tree.score(X_train,y_train)
+    testscores[i]=tree.score(X_test,y_test)
+print(trainingscores,trainingscores.mean(),trainingscores.std())
+print(testscores,testscores.mean(),testscores.std())
+
+trainingscores = np.zeros(10)
+testscores = np.zeros(10)
+for i in range(10):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=i+1, stratify=y)
+    tree = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
+    tree.fit(X_train, y_train)
+    trainingscores[i]=cross_val_score(tree,X_train,y_train,cv=10).mean()
+    testscores[i]=tree.score(X_test,y_test)
+print(trainingscores,trainingscores.mean(),trainingscores.std())
+print(testscores,testscores.mean(),testscores.std())
+
+print("My name is LI WENNING")
+print("My NetID is: wenning5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
